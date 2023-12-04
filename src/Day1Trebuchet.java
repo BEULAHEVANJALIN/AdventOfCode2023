@@ -3,8 +3,23 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.*;
 
 public class Day1Trebuchet {
+    private static final Map<String, Integer> wordToDigit = new HashMap<>();
+
+    static {
+        wordToDigit.put("one", 1);
+        wordToDigit.put("two", 2);
+        wordToDigit.put("three", 3);
+        wordToDigit.put("four", 4);
+        wordToDigit.put("five", 5);
+        wordToDigit.put("six", 6);
+        wordToDigit.put("seven", 7);
+        wordToDigit.put("eight", 8);
+        wordToDigit.put("nine", 9);
+    }
+
     public static void main(String[] args) {
         try {
             URL url = new URL("https://adventofcode.com/2023/day/1/input");
@@ -24,14 +39,22 @@ public class Day1Trebuchet {
     private static int extractAndParseInt(String line) {
         String firstDigit = "";
         String lastDigit = "";
-        for (char ch : line.toCharArray()) {
-            if (Character.isDigit(ch)) {
-                if (firstDigit.isEmpty()) {
-                    firstDigit = String.valueOf(ch);
+        for (int i = 0; i < line.length(); i++) {
+            for (String word : wordToDigit.keySet()) {
+                if (Character.isDigit(line.charAt(i))) {
+                    if (firstDigit.isEmpty()) {
+                        firstDigit = String.valueOf(line.charAt(i));
+                    }
+                    lastDigit = String.valueOf(line.charAt(i));
+                } else if (line.startsWith(word, i)) {
+                    if (firstDigit.isEmpty()) {
+                        firstDigit = String.valueOf(wordToDigit.get(word));
+                    }
+                    lastDigit = String.valueOf(wordToDigit.get(word));
                 }
-                lastDigit = String.valueOf(ch);
             }
         }
+
         try {
             return firstDigit.isEmpty() ? 0 : Integer.parseInt(firstDigit + lastDigit);
         } catch (NumberFormatException e) {
